@@ -100,7 +100,7 @@ Program wanproj
                space(ix,iy,iz,1:3) = (/(ix-1)*dr(1), (iy-1)*dr(2), (iz-1)*dr(3) /)
                !
                !Calculate Overlap
-               valt = valt + ks_wf(ix,iy,iz) * wan_wf(ix,iy,iz)
+               valt = valt + abs(ks_wf(ix,iy,iz)) * abs(wan_wf(ix,iy,iz))
                !
                !Check wan norm
                valt_wan = valt_wan + dble(wan_wf(ix,iy,iz))**2
@@ -113,7 +113,7 @@ Program wanproj
       enddo
       !
       !Calculate Integral
-      valt = valt/(grid(1)*grid(2)*grid(3))
+      valt = dble(valt/(grid(1)*grid(2)*grid(3)))**2
       valt_wan = valt_wan/(grid(1)*grid(2)*grid(3))
       if (myid ==0) valt_ks = valt_ks/(grid(1)*grid(2)*grid(3))
       !
