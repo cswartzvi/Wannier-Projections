@@ -1,0 +1,15 @@
+&wan_projections
+   wan_root    =  'fort.',
+   wan_offset  =  2000,
+   ks_state    =  4
+   ks_root     =  'fort.',
+   ks_offset   =  1000,
+   nbsp        =  4,
+   grid(1)     =  81,
+   grid(2)     =  81,
+   grid(3)     =  81,
+   alat(1)     =  23.5170,
+   alat(2)     =  23.5170,
+   alat(3)     =  23.5170,
+   output      =  'overlap.dat4'
+/
