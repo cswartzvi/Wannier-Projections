@@ -11,11 +11,10 @@ Program wanproj
    integer, parameter   :: DP  = SELECTED_REAL_KIND(15,99)
    real(DP),parameter   :: ao  = 0.52917721_DP
    !
-   complex(DP),allocatable :: read_1d(:),          &  !Initial 1D array for Wavefunctions
-                              wan_wf(:,:,:),       &  !ix,iy,iz point for Wannier Wavefuntion 
-                              ks_wf(:,:,:)            !ix,iy,iz point for "Kohn-Sham" Wavefuntion 
-   !
-   real(DP), allocatable   :: space(:,:,:,:),      &  !(ix, iy, iz, point value)  from FFT Grid
+   real(DP),allocatable ::    read_1d(:),          &  !Initial 1D array for Density
+                              wan_chargden(:,:,:), &  !ix,iy,iz point for Wannier Charge Density
+                              ks_chargden(:,:,:),  &  !ix,iy,iz point for "Kohn-Sham" Density
+                              space(:,:,:,:),      &  !(ix, iy, iz, point value)  from FFT Grid
                               val(:),              &  !complete overlap
                               val_wan(:),          &  !wannier Functions sum- check
                               val_ks(:)               !Kohn Sham sum - check
@@ -31,7 +30,7 @@ Program wanproj
                            
    !
    integer                 :: i, j, k,             &      
-                              ix, iy, iz,          &  !index for space/wavefunctions
+                              ix, iy, iz,          &  !index for space/charge-density
                               grid(3), grid_tot,   &  !Grid values and grid totals
                               nbsp,                &  !Number of States
                               ks_state,            &  !Kohn-Sham state to calculate the overlap
@@ -59,7 +58,7 @@ Program wanproj
    ! 
    !
    !
-   !Start Parallel environment Allocate/Initialize variables and read in KS file
+   !Start Parallel environment Allocate/Initialize variables and read in KS Charge Density
    Call startup()
    !
    !vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -81,7 +80,7 @@ Program wanproj
       !
       !Read/create the space and rho files AND 
       read(1,*) (read_1d(i), i=1,grid_tot)
-      Call array_1D_to_3D (read_1d, wan_wf, grid, grid_tot)
+      Call array_1D_to_3D (read_1d, wan_chargden, grid, grid_tot)
       !
       do i=1, grid_tot
          write(3000+me,*) read_1d(i)
@@ -100,27 +99,27 @@ Program wanproj
                space(ix,iy,iz,1:3) = (/(ix-1)*dr(1), (iy-1)*dr(2), (iz-1)*dr(3) /)
                !
                !Calculate Overlap
-               valt = valt + abs(ks_wf(ix,iy,iz)) * abs(wan_wf(ix,iy,iz))
+               valt = valt + ks_chargden(ix,iy,iz) * wan_chargden(ix,iy,iz)
                !
                !Check wan norm
-               valt_wan = valt_wan + dble(wan_wf(ix,iy,iz))**2
+               valt_wan = valt_wan + wan_chargden(ix,iy,iz)
                !
                !Check ks norm
-               if (myid == 0) valt_ks = valt_ks + dble(ks_wf(ix,iy,iz))**2
+               if (myid == 0) valt_ks = valt_ks + ks_chargden(ix,iy,iz)
                !
             enddo
          enddo
       enddo
       !
       !Calculate Integral
-      valt = dble(valt/(grid(1)*grid(2)*grid(3)))**2
+      valt = valt/(grid(1)*grid(2)*grid(3))
       valt_wan = valt_wan/(grid(1)*grid(2)*grid(3))
       if (myid ==0) valt_ks = valt_ks/(grid(1)*grid(2)*grid(3))
       !
       !Last loop Clean up
       if (np == per_proc) then
-         deallocate( wan_wf, read_1d, space )
-         if(allocated(ks_wf)) deallocate(ks_wf)
+         deallocate( wan_chargden, read_1d, space )
+         if(allocated(ks_chargden)) deallocate(ks_chargden)
       endif
       !
       !Close the File (a new one may be opened if there is another loop)
@@ -269,8 +268,8 @@ Program wanproj
          !wavefunctions and space grids
          grid_tot = grid(1)*grid(2)*grid(3)
          allocate(read_1d(grid_tot))
-         allocate( wan_wf(grid(1), grid(2), grid(3))    )
-         allocate( ks_wf(grid(1), grid(2), grid(3))     )
+         allocate( wan_chargden(grid(1), grid(2), grid(3))    )
+         allocate( ks_chargden(grid(1), grid(2), grid(3))     )
          allocate( space(grid(1), grid(2), grid(3), 3) )
          allocate( val(nbsp)  )
          if (myid == 0) allocate( val_ks(nbsp)   )
@@ -278,8 +277,8 @@ Program wanproj
          !
          !Initialize
          read_1d(:)     = 0.0_DP
-         wan_wf(:,:,:)  = 0.0_DP
-         ks_wf(:,:,:)   = 0.0_DP
+         wan_chargden(:,:,:)  = 0.0_DP
+         ks_chargden(:,:,:)   = 0.0_DP
          space(:,:,:,:) = 0.0_DP
          val(:)         = 0.0_DP
          val_wan(:)     = 0.0_DP
@@ -307,7 +306,7 @@ Program wanproj
          endif
          !
          Call MPI_BCAST(read_1d, grid_tot, MPI_COMPLEX, 0, MPI_COMM_WORLD, ierr)
-         Call array_1D_to_3D (read_1d, ks_wf, grid, grid_tot)
+         Call array_1D_to_3D (read_1d, ks_chargden, grid, grid_tot)
          !
          return
          !
@@ -320,8 +319,8 @@ Program wanproj
          !
          implicit none
          !
-         complex(DP),intent(in)  :: array1(:)
-         complex(DP),intent(out) :: array3(:,:,:) 
+         real(DP),intent(in)  :: array1(:)
+         real(DP),intent(out) :: array3(:,:,:) 
          integer, intent(in)  :: grid(3), grid_tot       !grid dimensions and totals
 
          integer              :: i,                   &
