@@ -1,0 +1,11 @@
+   <tot-atoms>  <number-of-species> <1-Angstrom, 2-Bohr>
+   <alat11>       <alat12>       <alat13>
+   <alat21>       <alat22>       <alat23>
+   <alat31>       <alat32>       <alat33>
+   <atomic-number1>     <pos11>     <pos12>     <pos13>
+   <atomic-number2>     <pos21>     <pos22>     <pos23>
+   <atomic-number3>     <pos31>     <pos32>     <pos13>
+         .                 .           .           .
+         .                 .           .           .
+         .                 .           .           .
+   <atomic-numberN>     <posN1>     <posN2>     <posN3>
