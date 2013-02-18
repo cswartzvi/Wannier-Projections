@@ -110,6 +110,7 @@ Program wanproj
                space(ix,iy,iz,1:3) = (/(ix-1)*dr(1), (iy-1)*dr(2), (iz-1)*dr(3) /)
                !
                !Calculate Overlap
+               !valt = valt + ks_wf(ix,iy,iz)*ks_wf(ix,iy,iz) * wan_wf(ix,iy,iz)*wan_wf(ix,iy,iz)
                valt = valt + abs(ks_wf(ix,iy,iz)) * abs(wan_wf(ix,iy,iz))
                !
                !Check wan norm
@@ -451,7 +452,10 @@ Program wanproj
          enddo
          !
          close(aunit)
-         if( bohr_or_Ang == 0) tau(:,:) = tau(:,:)*ao
+         if( bohr_or_Ang == 0) then
+            tau(:,:) = tau(:,:)*ao
+            at(:,:)  = at(:,:)*ao
+         endif
          !
          !Print the Files
          WRITE(xunit,*) 'CRYSTAL'
