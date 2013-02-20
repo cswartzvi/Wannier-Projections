@@ -110,8 +110,9 @@ Program wanproj
                space(ix,iy,iz,1:3) = (/(ix-1)*dr(1), (iy-1)*dr(2), (iz-1)*dr(3) /)
                !
                !Calculate Overlap
-               !valt = valt + ks_wf(ix,iy,iz)*ks_wf(ix,iy,iz) * wan_wf(ix,iy,iz)*wan_wf(ix,iy,iz)
                valt = valt + abs(ks_wf(ix,iy,iz)) * abs(wan_wf(ix,iy,iz))
+               !valt = valt + (ks_wf(ix,iy,iz)) * (wan_wf(ix,iy,iz))
+               !valt = valt + ks_wf(ix,iy,iz)**2 * wan_wf(ix,iy,iz)**2
                !
                !Check wan norm
                valt_wan = valt_wan + wan_wf(ix,iy,iz)*wan_wf(ix,iy,iz)
@@ -125,6 +126,7 @@ Program wanproj
       !
       !Calculate Integrals
       valt = dble(valt/(grid(1)*grid(2)*grid(3)))**2
+      !valt = valt/(grid(1)*grid(2)*grid(3))
       valt_wan = valt_wan/(grid(1)*grid(2)*grid(3))
       if (myid ==0) valt_ks = valt_ks/(grid(1)*grid(2)*grid(3))
       !
@@ -141,7 +143,7 @@ Program wanproj
       Call mpi_send_recv(me, myid, np, nproc, per_proc, remain, val, valt)
       !
       !
-      write(6,'(6X,"Wannier Function : ", I4, ", Integrated Chagre : ",F14.5)') me, valt_wan  
+      write(6,'(6X,"Wannier Function : ", I4, ", Integrated Charge : ",F14.5)') me, valt_wan 
       !
    enddo proc_loop 
    !-------------------------------------------------------
@@ -172,7 +174,7 @@ Program wanproj
       end_time = MPI_Wtime()
       close(3)
       write(6,*)
-      write(6,'(5X,"Kohn-Sham Integrated Chagre : ",F14.5)') valt_ks
+      write(6,'(5X,"Kohn-Sham Integrated Charge : ",F14.5)') valt_ks
       write(6,*)
       Write(6,*) '    Total time: ', end_time - start_time
       write(6,*)
@@ -281,7 +283,7 @@ Program wanproj
                print *, 'Error: Opening ', tempfile
                stop
             else 
-               write(*,'(/,5X,"Kohn-Sham state read from:",A20)') tempfile
+               write(*,'(/,5X,"Kohn-Sham state read from:",A50)') tempfile
             endif
             !
             read(2) read_1d
@@ -427,14 +429,14 @@ Program wanproj
          real(DP), intent(in)                      :: rho(:,:,:)
          integer,intent(in)                        :: grid(:)
          character(len=*), intent(in)              :: file_name
-         character(len=*), intent(in)    :: atomfile
+         character(len=*), intent(in)              :: atomfile
          !
          real(DP), allocatable   :: tau(:,:)
          real(DP)                :: at(3,3)
          !
          integer, allocatable :: ityp(:) 
          integer              :: nat, ntyp, bohr_or_Ang
-         integer              :: xunit, aunit
+         integer              :: xunit=10, aunit=11
          !
          integer              ::ix, iy, iz, i, j
          !
@@ -489,7 +491,8 @@ Program wanproj
          WRITE(xunit,'(a)') 'END_BLOCK_DATAGRID_3D'
          !
          deallocate(ityp, tau)
-         Close(xunit)
+         close(aunit)
+         close(xunit)
          !
          RETURN
       END SUBROUTINE write_xsf
