@@ -111,8 +111,6 @@ Program wanproj
                !
                !Calculate Overlap
                valt = valt + abs(ks_wf(ix,iy,iz)) * abs(wan_wf(ix,iy,iz))
-               !valt = valt + (ks_wf(ix,iy,iz)) * (wan_wf(ix,iy,iz))
-               !valt = valt + ks_wf(ix,iy,iz)**2 * wan_wf(ix,iy,iz)**2
                !
                !Check wan norm
                valt_wan = valt_wan + wan_wf(ix,iy,iz)*wan_wf(ix,iy,iz)
@@ -126,7 +124,6 @@ Program wanproj
       !
       !Calculate Integrals
       valt = dble(valt/(grid(1)*grid(2)*grid(3)))**2
-      !valt = valt/(grid(1)*grid(2)*grid(3))
       valt_wan = valt_wan/(grid(1)*grid(2)*grid(3))
       if (myid ==0) valt_ks = valt_ks/(grid(1)*grid(2)*grid(3))
       !
@@ -304,7 +301,7 @@ Program wanproj
                !
                call write_xsf(dble(ks_wf)**2, grid, tempfile, atomfile)
                !
-               write(*,'(5X,"Kohn-Sham xsf :",A20)') tempfile
+               write(*,'(5X,"Kohn-Sham xsf :",A50)') tempfile
                !
                close(3)
             endif
