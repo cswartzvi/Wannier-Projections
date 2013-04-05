@@ -14,11 +14,11 @@ outfile='overlap.out'${val}
 
 cat > $infile << EOF 
 &wan_projections
-   wan_root    =  'Simulation_Files/WAN_',
-   wan_ext     =  '.dat'
-   ks_state    =  ${val}
-   ks_root     =  'Simulation_Files/KS_',
-   ks_ext     =  '.dat'
+   spec_root    =  'Simulation_Files/WAN_',
+   spec_ext     =  '.dat'
+   proj_state    =  ${val}
+   proj_root     =  'Simulation_Files/KS_',
+   proj_ext     =  '.dat'
    nbsp        =  256,
    print_xsf   = .TRUE.
    atomfile    =  'atoms.dat'
