@@ -1,8 +1,8 @@
 CC=gcc
 CFLAGS= 
-F90=mpif90
+F90=ftn
 #F90FLAGS=-g -traceback -Mbounds
-F90FLAGS=-cpp -O3
+F90FLAGS=-mp -O3
 PARAFLAGS=
 
 SOURCES= main.f90

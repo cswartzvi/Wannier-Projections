@@ -36,7 +36,7 @@ Program wanproj
                               spec_wf(:,:,:),      &  !ix,iy,iz point for Spectrum Wavefunctions
                               proj_wf(:,:,:)          !ix,iy,iz point for Projected Wavefunction
 
-   real(DP),allocatable ::    space(:,:,:,:),      &  !(ix, iy, iz, point value)  from FFT Grid
+   real(DP),allocatable ::    space(:,:,:,:),      &  !(ix, iy, iz, point value)  from FFT Grid in bohr
                               val(:),              &  !complete overlap
                               val_spec(:),         &  !Spectrum wavfunctions sum- check
                               val_proj(:)             !Projected wavefunction sum - check
@@ -45,10 +45,10 @@ Program wanproj
                               valt_spec,           &  !local copy of spectrum sum
                               valt_proj,           &  !local copy of projected sum
                               ans,                 &  !transfer value amoung processors
-                              alat(3),             &  !lattice vetors
+                              alat(3),             &  !lattice vetors in bohr
                               dr(3),               &  !interval distance between space points
                               rcut,                &  !Cut-off radius in Angstroms (int_sphere)
-                              defect(3),           &  !Position of the defect Ion (int_sphere)
+                              defect(3),           &  !Position of the defect Ion in bohr (int_sphere)
                               disp(3),             &  !Individual component displacement from defect (int_sphere)
                               dist2,               &  !Squared distance from defect (int_sphere)
                               start_time,          &  
@@ -81,7 +81,7 @@ Program wanproj
    !
    !Namelist for Standard Input
    NAMELIST /projections/ spec_root, proj_root, grid, nbsp, alat, proj_state,      &
-                      spec_ext, proj_ext, output, print_xsf, atomfile,           &
+                      spec_ext, proj_ext, output, print_xsf, atomfile,             &
                       int_sphere, rcut, defect
    ! 
    !
@@ -108,7 +108,7 @@ Program wanproj
       !
       !Read binary file and create the space and wavefunction files AND convert them to 3D
       read(1) read_1d
-      Call array_1D_to_3D (read_1d, proj_wf, grid, grid_tot)
+      Call array_1D_to_3D (read_1d, spec_wf, grid, grid_tot)
       close(1)
       !
       !If print_xsf if defined print out the xsf file
@@ -251,6 +251,7 @@ Program wanproj
          int_sphere = .FALSE.
          print_xsf = .FALSE.
          rcut = 1.0
+         defect(:) = 0.0_DP
          !
          !Clock
          if (myid == 0) then
@@ -311,7 +312,7 @@ Program wanproj
          !
          !Set up space with matching indexes 
          do i=1,3,1
-            alat(i) = alat(i) *  ao
+            alat(i) = alat(i)
             dr(i) = alat(i)/DBLE(grid(i) - 1)
          enddo
          !
@@ -573,7 +574,7 @@ Program wanproj
 
          if (int_sphere) Then
             write(*,'(3X,"Projection over integration sphere, radius: ", F7.4, " Angstroms")') rcut
-            write(*,'(3X,"Defect Postion: ", 3(F7.4,2X))') rcut
+            write(*,'(3X,"Defect Postion: ", 3(F7.4,2X)), " Bohr"') (defect(i),i=1,3)
             write(*,*)
          else
             write(*,'(3X,"Projection over the entire space")')
