@@ -383,6 +383,9 @@ Program wanproj
          write(*,'(3X,"Grid values      ", 1X, I4, I4, I4)') grid(1), grid(2), grid(3)
          write(*,'(3X,"Alat values      ", 3X, 3(F7.4,2X))') alat(1), alat(2), alat(3)
          write(*,*)
+         write(*,'(3X,"Projected State Root:   ",A20)') proj_root
+         write(*,'(3X,"Spectrum State Root:    ",A20)') spec_root
+         write(*,*)
 
          if (print_xsf) Then
             write(*,'(3X,"All Charge Densities will be converted to xsf Files")')
