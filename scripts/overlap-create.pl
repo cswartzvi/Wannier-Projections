@@ -6,13 +6,15 @@ use warnings;
 #Open peak file
 my $peak_file = shift @ARGV;
 my @origin = (0.729660E+01,  0.531069E+01,  0.220219E+01);
-
+my $serial_proj = '/home/charles/Desktop/Research/Ext_Programs/Wannier-Projection/proj-serial.x';
 print "Using origin:\n @origin\n";
 
 open my $fh, '<', $peak_file or die "ERROR: No $peak_file found $!";
 my @peak_file = <$fh>;
 
 for my $state (@peak_file){
+
+   print "State: $state \n";
    #Start, stop and interval for the distance in Angstrom
    my $start_radius = 0;
    my $dr = 0.1;
@@ -56,7 +58,7 @@ EOF
    select STDOUT;
    close ($fh);
 
-   my @output = `/global/homes/c/cswartz/Ext_Programs/Wannier-Projections/proj-serial.x < $infile`; 
+   my @output = `$serial_proj  < $infile`; 
    my $proj = (split ' ', (grep /Final Projection:/, @output)[0] )[2];
 
 
