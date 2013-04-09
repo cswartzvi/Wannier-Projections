@@ -8,7 +8,7 @@
 ! Description: This Porgram will take a Single Wavefunction (The Projected
 ! Wavefuntion) and compute its projections onto a number of the other
 ! wavefunctons (Spectrum Wavefunctions).
-!
+
 !
 ! Input: Input-File (From STDIN) with the following...
 !
