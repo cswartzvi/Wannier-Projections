@@ -4,6 +4,8 @@
 use warnings;
 use strict;
 
+#Input all numbers to consider 
+
 use PDF::API2::Simple;
 
 my $main_dir = '/home/charles/Desktop/Research/MD_Analysis/MD_water-Ions-64/PBE_novdw_330K/OH/Wannier-Projections/config202100';
