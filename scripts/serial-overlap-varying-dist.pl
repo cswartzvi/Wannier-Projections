@@ -5,8 +5,8 @@ use warnings;
 
 #Open peak file
 my $peak_file = shift @ARGV;
-my @origin = (0.729660E+01,  0.531069E+01,  0.220219E+01);
-my $serial_proj = '/home/charles/Desktop/Research/Ext_Programs/Wannier-Projection/proj-serial.x';
+my @origin = (.659635E+01,  0.559085E+01,  0.223083E+01);
+my $serial_proj = '/global/homes/c/cswartz/Ext_Programs/Wannier-Projections/proj-serial.x';
 
 #Start, stop and interval for the distance in Angstrom
 my $start_radius = 0;
@@ -20,7 +20,7 @@ my @peak_file = <$fh>;
 
 for (@peak_file){
 
-   my $state = (split)[1];
+   my $state = (split ' ', $_)[1];
 
    print "State: $state \n";
    #Previous Projection

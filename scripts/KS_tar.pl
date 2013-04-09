@@ -15,7 +15,7 @@ use warnings;
 my $root = shift @ARGV;
 my $ext = shift @ARGV;
 
-my $tar_line = "tar -cvzf projections.tgz eig.dat intKS.* peaks.dat ";
+my $tar_line = "tar -cvzf projections.tgz varying-radius eig.dat intKS.* peaks.dat ";
 for (<>){
 
    my $num = (split)[1];

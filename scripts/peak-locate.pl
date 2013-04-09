@@ -9,7 +9,6 @@
 
 use strict;
 use warnings;
-use 5.0120;
 
 #intkS RAW File (This is a new file that has the eigenstate numbers of the x-axis);
 my $file_raw = shift @ARGV;
@@ -122,11 +121,9 @@ FIND_PEAKS: {
       print "Are these peaks correct? [y/n]:";
       my $ans = <STDIN>;
 
-      given ($ans) {
-         when ( /y/i) { last PROMPT}
-         when ( /n/i) { redo FIND_PEAKS}
-         default      { next PROMPT}
-      }
+         if    ( $ans =~ /y/i)   { last PROMPT; }
+         elsif ( $ans =~ /n/i)   { redo FIND_PEAKS;}
+         else                    { next PROMPT;}
    }
 }
 
@@ -185,7 +182,7 @@ unset key
 set xr[$xr1:$xr2]
 set xlabel(\"Electron Binding [eV]\")
 set ylabel(\"Photoemission Spectrum [arb. u.]\")
-plot './intKS.dat' u 1:2 w l, './peaks.dat' u 3:(\$4):1 w labels font \"bold,10\"
+plot './$file' u 1:2 w l, './$output' u 3:(\$4):1 w labels font \"bold,10\"
 EOF
 
 
