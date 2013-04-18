@@ -36,7 +36,7 @@ my $eig_file = 'eig.dat';     #Eigenvalues file
 my $gnu = 'temp.gnu';         #gnuplot template file
 my $temp = 'output.temp';     #output template file
 
-my ($xr1, $xr2) = (-28, -8);  #for the gnuplot at the end
+my ($xr1, $xr2) = (-28, -6);  #for the gnuplot at the end
 #--------------------------------------------------------
 
 open my $fh_raw, '<', $file_raw or die "ERROR: Cannot open $file_raw $!";

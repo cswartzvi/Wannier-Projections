@@ -28,6 +28,7 @@ Program wanproj
    !
    integer, parameter   :: DP  = SELECTED_REAL_KIND(15,99)
    real(DP),parameter   :: ao  = 0.52917721_DP
+   real(DP),parameter   :: pi  = 3.14159265358979323846_DP
    !
    complex(DP),allocatable :: read_1d(:),          &  !Initial 1D array for Wavefunction
                               spec_wf(:,:,:),      &  !ix,iy,iz point for Spectrum Wavefunctions
@@ -66,7 +67,8 @@ Program wanproj
                       spec_ext, proj_ext, output, print_xsf, atomfile,             &
                       int_sphere, rcut, defect
    ! 
-   !
+   !Intialize that program
+   Call startup()
    !
    !Determine and open the correct spectrum file
    write(x1, '(I0)'), spec_state
@@ -76,7 +78,7 @@ Program wanproj
    print *, 'Error: Opening ', tempfile
       stop
    else
-      write(*,'(/,5X,"Spectrum Wavefunction read from:",A50)') tempfile
+      write(*,'(5X,"Spectrum Wavefunction read from: ",A50,/)') tempfile
    endif
    !
    !Read binary file and create the space and wavefunction files AND convert them to 3D
@@ -96,7 +98,7 @@ Program wanproj
    !
    !Loop over all points add up sums
    valt = 0.0_DP
-   valt_spec= 0.0_DP
+   valt_spec  = 0.0_DP
    valt_proj  = 0.0_DP
    !
    do iz=1, grid(3)
@@ -150,13 +152,13 @@ Program wanproj
    deallocate( spec_wf, read_1d, space )
    deallocate(proj_wf)
    !
-   write(6,'(5X,"Spectrum Wavefunction : ", I4, ", Integrated Charge : ",F14.5)') spec_state, valt_spec
+   write(6,'(5X,"Spectrum Wavefunction Integrated Charge:  ",F14.5)') valt_spec
    !
    write(6,*)
-   write(6,'(5X,"Projected Wavefunction Integrated Charge : ",F14.5)') valt_proj
+   write(6,'(5X,"Projected Wavefunction Integrated Charge: ",F14.5)') valt_proj
    write(6,*)
    !Final package of the overlap
-   write(6,'(I8,3X,F14.5)') "Final Overlap: ", valt 
+   write(6,'(/,5X,"Final Projection: ",F14.5)') valt 
    !
    write(6,*)
    !
@@ -178,6 +180,11 @@ Program wanproj
          print_xsf = .FALSE.
          rcut = 1.0
          defect(:) = 0.0_DP
+         !
+         !Read namelist from STDIN
+         read(5,nml=projections,IOSTAT=ierr)
+         !
+         call welcome()
          !
          if (print_xsf .and. atomfile == ' ' ) then 
             write(*,*) ' ERORR: atomfile must be defined with print_xsf '
@@ -214,10 +221,12 @@ Program wanproj
             print *, 'Error: Opening ', tempfile
             stop
          else 
-            write(*,'(/,5X,"Projected Wavefunction read from:",A50)') tempfile
+            write(*,'(/,5X,"Projected Wavefunction read from: ",A50)') tempfile
          endif
          !
          read(2) read_1d
+         !
+         Call array_1D_to_3D (read_1d, proj_wf, grid, grid_tot)
          !
          close(2)
          !
@@ -378,8 +387,8 @@ Program wanproj
          write(*,'(2X,"-----------------------------------------------")')
          write(*,*)
          write(*,'(3X,"Input Values:")')
-         write(*,'(3X,"Projected State  ", I4)') proj_state
-         write(*,'(3X,"Spectrum State   ", I4)') spec_state
+         write(*,'(3X,"Projected State  ", I5)') proj_state
+         write(*,'(3X,"Spectrum State   ", I5)') spec_state
          write(*,'(3X,"Grid values      ", 1X, I4, I4, I4)') grid(1), grid(2), grid(3)
          write(*,'(3X,"Alat values      ", 3X, 3(F7.4,2X))') alat(1), alat(2), alat(3)
          write(*,*)

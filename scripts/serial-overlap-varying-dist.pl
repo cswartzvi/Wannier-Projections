@@ -22,6 +22,9 @@ for (@peak_file){
 
    my $state = (split ' ', $_)[1];
 
+   #output file
+   open my $fout, '>', "output.dat".$state;
+
    print "State: $state \n";
    #Previous Projection
    my $prev_proj = 0.0;
@@ -65,8 +68,10 @@ EOF
    my $proj = (split ' ', (grep /Final Projection:/, @output)[0] )[2];
 
 
-   printf "%7.4f  %7.4f  %7.4f \n",  $radius, $proj, $proj-$prev_proj; 
+   printf $fout "%7.4f  %7.4f  %7.4f \n",  $radius, $proj, $proj-$prev_proj; 
+   printf STDOUT "%7.4f  %7.4f  %7.4f \n",  $radius, $proj, $proj-$prev_proj; 
 
    $prev_proj = $proj;
    }
+ close ($fout);
 }

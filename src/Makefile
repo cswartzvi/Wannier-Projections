@@ -21,7 +21,7 @@ OBJ=$(addsuffix .o, $(basename $(SOURCES)))
 
 
 
-wanproj.x: $(OBJ)
+proj.x: $(OBJ)
 	@echo "Building new wanproj ... "
 	@echo "Current objects: $(OBJ)"
 	$(F90) $(F90FLAGS) $(PARAFLAGS) $(OBJ) -o $@
